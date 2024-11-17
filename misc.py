@@ -11,6 +11,7 @@ def split_dict_into_cols(df, col):
     ''' 
     For an entire Pandas dataframe normalize the dictionary value pairs from
     column col into individual columns named by key value.
+    Correct misspelled keys for "offer_id"
     
     Arguments:
     df - Pandas dataframe
@@ -29,6 +30,7 @@ def split_dict_into_cols(df, col):
 
         dictval = row[col]
         for key, value in dictval.items():
+            # Correct misspelled keys for "offer_id"
             if key == 'offer id':
                 key = 'offer_id'
             # print(f"Key: {key}, Value: {value}")

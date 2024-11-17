@@ -1,3 +1,46 @@
+        '''        
+            #try:
+                # Correct the dictionary string
+                # corrected_value = correct_dict_string(row[col])
+                #corrected_value = row[col]
+                # Convert the string representation of dictionaries to actual dictionaries
+                #df.at[index, col] = ast.literal_eval(corrected_value)
+                print(f"{row[col]}  {type(row[col])}")
+            # except (ValueError, SyntaxError):
+                # If conversion fails, add the row to conversion_errors list
+                conversion_errors.append(row)
+
+        # Create a dataframe for conversion errors
+        # df_conversion_errors = pd.DataFrame(conversion_errors)
+
+        # Normalize the dictionary values in the 'col' column and join them back to the original dataframe
+        # df_expanded = df.join(pd.json_normalize(df[col]))
+
+        # Drop the original 'col' column as it's no longer needed
+        # df_expanded = df_expanded.drop(columns=[col])
+
+
+    # Function to correct malformed dictionary strings
+    def correct_dict_string(s):
+        if isinstance(s, str):
+            s = re.sub(r'(\w+):', r'"\1":', s)  # Add quotes around keys
+        return s
+
+
+# Profile records without a corresponding transcript record
+# Perform the right join to find records in profile without a corresponding transcript record
+merged_df = pd.merge(transcript, profile, left_on='person', right_on='id', how='left')
+
+# Filter the records where transcript information is missing (i.e., id is NaN)
+missing_transcript_records = merged_df[merged_df['id'].isna()]
+
+# Get the number of such records
+num_missing_records = len(missing_transcript_records)
+
+print(f"The number of profile records without a corresponding transcript record is {num_missing_records}.")
+
+
+
 Given two dataframes
 transcript as
 <class 'pandas.core.frame.DataFrame'>
