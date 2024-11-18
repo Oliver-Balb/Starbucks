@@ -1,3 +1,28 @@
+Given the pandas dataframe transcript_norm as 
+Index: 51 entries, 0 to 281785
+Data columns (total 7 columns):
+ #   Column    Non-Null Count  Dtype  
+---  ------    --------------  -----  
+ 0   person    51 non-null     object 
+ 1   event     51 non-null     object 
+ 2   value     51 non-null     object 
+ 3   time      51 non-null     int64  
+ 4   offer_id  34 non-null     object 
+ 5   amount    17 non-null     float64
+ 6   reward    6 non-null      float64
+dtypes: float64(2), int64(1), object(4)
+please translate the following sql query into python code:
+SELECT person, offer_id, count(*) AS A
+FROM transcript_norm
+WHERE event = 'offer_received'
+GROUP BY person, offer_id
+HAVING count(*)>1;
+
+
+
+
+
+
         '''        
             #try:
                 # Correct the dictionary string

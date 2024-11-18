@@ -5,6 +5,17 @@ import re
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_colwidth', 100)
 
+# Example Series
+data = pd.Series([10, 20, 30, 40])
+
+print(type(data))
+
+for value in data:
+    print(value)
+
+quit()
+
+
 transcript = pd.read_json('data/transcript.json', orient='records', lines=True)
 
 def split_dict_into_cols(df, col):
