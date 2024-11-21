@@ -52,3 +52,27 @@ def split_dict_into_cols(df, col):
 
 df_result = split_dict_into_cols(transcript, 'value')
 df_result.to_excel('data/transcript_normalized.xlsx')
+
+
+
+for person in persons_unique:
+    # Get all offers completed records in order to get their time value
+    transcript_norm_pers_of_test = transcript_norm_test[((transcript_norm_test['person'] == person) & (transcript_norm_test['event'] == 'offer completed'))]
+    print()
+    for time in transcript_norm_pers_of_test['time']:
+        # Calculate the sum of all rewards of offers at that point in time:
+        sum_rewards = transcript_norm_pers_of_test[transcript_norm_pers_of_test['time'] == time]['reward'].values.sum()
+        for offer_id in transcript_norm_pers_of_test[transcript_norm_pers_of_test['time'] == time]['offer_id']:
+            # Use each time value to get the previous transaction record and amount
+            # As sometimes multiple offers are completed at the same time, split the transaction value according to the reward ratio of all completed offers at time *time*
+            amount_of_compl = round((transcript_norm_test[((transcript_norm_test['person'] == person) & (transcript_norm_test['event'] == 'transaction') & 
+                                                    (transcript_norm_test['time'] == time))]['amount'].values.sum()) * 
+                                    (transcript_norm_test[((transcript_norm_test['person'] == person) & (transcript_norm_test['event'] == 'offer completed') & 
+                                                    (transcript_norm_test['time'] == time) & (transcript_norm_test['offer_id'] == offer_id))]['reward'].values.sum()) /
+                                    sum_rewards, 2) 
+
+            # Write the (distributed) amount of completion to the offer completed record.      
+            transcript_norm_test.loc[(transcript_norm_test['person'] == person) & (transcript_norm_test['event'] == 'offer completed') & 
+                                     (transcript_norm_test['time'] == time) & (transcript_norm_test['offer_id'] == offer_id), 'amount_of_compl'] = amount_of_compl
+        
+transcript_norm_test[transcript_norm_test['event'] == 'offer completed']

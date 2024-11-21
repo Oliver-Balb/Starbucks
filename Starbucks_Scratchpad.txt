@@ -1,3 +1,67 @@
+==========================================
+# Process the 'event chain' person by person and "move" the transaction amount to the offer_completed record while splitting it up relative to reward ratio
+for person in persons_unique:
+    # Get all offers completed records by current person in order to get their offer_rcvd_time value
+    offer_agg_pers = offer_agg.loc[(offer_agg['person'] == person)]
+    for offer_rcvd_time in offer_agg_pers['offer_rcvd_time']:
+        # Calculate the sum of all rewards of offers at that point in offer_rcvd_time:
+        sum_rewards = transcript_norm[(transcript_norm['person'] == person) & (transcript_norm['event'] == 'offer received') & (transcript_norm['offer_rcvd_time'] == offer_rcvd_time)]['offer_reward'].values.sum()
+        print(transcript_norm[(transcript_norm['person'] == person) & (transcript_norm['event'] == 'offer completed') & (transcript_norm['offer_rcvd_time'] == offer_rcvd_time)])
+        print(f'sum_rewards {sum_rewards}')
+        for offer_id in offer_agg_pers[offer_agg_pers['offer_rcvd_time'] == offer_rcvd_time]['offer_id']:
+            # Use each offer_rcvd_time value to get the previous transaction record and amount
+            # As sometimes multiple offers are completed at the same offer_rcvd_time, split the transaction value according to the reward ratio of all completed offers at current offer_rcvd_time 
+            amount_of_compl = round((transcript_norm[((transcript_norm['person'] == person) & (transcript_norm['event'] == 'transaction') & 
+                                                    (transcript_norm['offer_rcvd_time'] == offer_rcvd_time))]['amount'].values.sum()) * 
+                                    (transcript_norm[((transcript_norm['person'] == person) & (transcript_norm['event'] == 'offer completed') & 
+                                                    (transcript_norm['offer_rcvd_time'] == offer_rcvd_time) & (transcript_norm['offer_id'] == offer_id))]['offer_reward'].values.sum()) /
+                                    sum_rewards, 2) 
+
+            # Write the (distributed) amount of completion to the offer completed record.      
+            offer_agg.loc[(offer_agg['person'] == person) & (offer_agg['offer_rcvd_time'] == offer_rcvd_time) & (offer_agg['offer_id'] == offer_id), 'amount_of_compl'] = amount_of_compl
+        
+offer_agg[offer_agg['person'] == "2eeac8d8feae4a8cad5a6af0499a211d"]
+
+------------------------------------------
+amount_of_compl !==! 0
+
+Empty DataFrame
+Columns: [person, event, offer_rcvd_time, offer_id, amount, offer_reward, channels, offer_difficulty, offer_duration, offer_type]
+Index: []
+sum_rewards 3.0
+Empty DataFrame
+Columns: [person, event, offer_rcvd_time, offer_id, amount, offer_reward, channels, offer_difficulty, offer_duration, offer_type]
+Index: []
+sum_rewards 2.0
+==========================================
+
+for person in persons_unique:
+    # Get all offers completed records in order to get their offer_rcvd_time value
+    transcript_norm_pers = transcript_norm[((transcript_norm['person'] == person) & (transcript_norm['event'] == 'offer completed'))]
+    for offer_rcvd_time in transcript_norm_pers['offer_rcvd_time']:
+        # Calculate the sum of all rewards of offers at that point in offer_rcvd_time:
+        sum_rewards = transcript_norm_pers[transcript_norm_pers ['offer_rcvd_time'] == offer_rcvd_time]['offer_reward'].values.sum()
+        for offer_id in transcript_norm_pers[transcript_norm_pers['offer_rcvd_time'] == offer_rcvd_time]['offer_id']:
+            # Use each offer_rcvd_time value to get the previous transaction record and amount
+            # As someoffer_rcvd_times multiple offers are completed at the same offer_rcvd_time, split the transaction value according to the reward ratio of all completed offers at offer_rcvd_time *offer_rcvd_time*
+            amount_of_compl = round((transcript_norm[((transcript_norm['person'] == person) & (transcript_norm['event'] == 'transaction') & 
+                                                    (transcript_norm['offer_rcvd_time'] == offer_rcvd_time))]['amount'].values.sum()) * 
+                                    (transcript_norm[((transcript_norm['person'] == person) & (transcript_norm['event'] == 'offer completed') & 
+                                                    (transcript_norm['offer_rcvd_time'] == offer_rcvd_time) & (transcript_norm['offer_id'] == offer_id))]['offer_reward'].values.sum()) /
+                                    sum_rewards, 2) 
+
+            # Write the (distributed) amount of completion to the offer completed record.      
+            transcript_norm.loc[(transcript_norm['person'] == person) & (transcript_norm['event'] == 'offer completed') & 
+                                     (transcript_norm['offer_rcvd_time'] == offer_rcvd_time) & (transcript_norm['offer_id'] == offer_id), 'amount_of_compl'] = amount_of_compl
+        
+transcript_norm[transcript_norm['event'] == 'offer completed']
+
+
+
+
+
+
+
 Given the pandas dataframe transcript_norm as 
 Index: 51 entries, 0 to 281785
 Data columns (total 7 columns):
