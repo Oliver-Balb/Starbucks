@@ -1,19 +1,25 @@
 import pandas as pd
-import ast
-import re
 
-pd.set_option('display.max_rows', None)
-pd.set_option('display.max_colwidth', 100)
+# Create a pandas dataframe transcript_norm_pers_time with column reward containing values 5, 2
+data = {'reward': [4, 4, 2]}
+transcript_norm_pers_time = pd.DataFrame(data)
 
-# Example Series
-data = pd.Series([10, 20, 30, 40])
+# Define the amount to be distributed
+amount = 100.0
 
-print(type(data))
+# Calculate the total reward
+total_reward = transcript_norm_pers_time['reward'].sum()
 
-for value in data:
-    print(value)
+# Distribute the amount according to the reward value into a new column amount_share
+transcript_norm_pers_time['amount_share'] = (transcript_norm_pers_time['reward'] / total_reward) * amount
+
+# Display the dataframe
+print(transcript_norm_pers_time)
 
 quit()
+
+
+
 
 
 transcript = pd.read_json('data/transcript.json', orient='records', lines=True)
