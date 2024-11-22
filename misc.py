@@ -55,10 +55,10 @@ df_result.to_excel('data/transcript_normalized.xlsx')
 
 
 
+# Process the 'event chain' person by person
 for person in persons_unique:
     # Get all offers completed records in order to get their time value
     transcript_norm_pers_of_test = transcript_norm_test[((transcript_norm_test['person'] == person) & (transcript_norm_test['event'] == 'offer completed'))]
-    print()
     for time in transcript_norm_pers_of_test['time']:
         # Calculate the sum of all rewards of offers at that point in time:
         sum_rewards = transcript_norm_pers_of_test[transcript_norm_pers_of_test['time'] == time]['reward'].values.sum()
