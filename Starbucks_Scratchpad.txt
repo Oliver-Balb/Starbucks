@@ -1,4 +1,114 @@
 ==========================================
+### new:
+# Process the 'event chain' person by person and "move" the transaction amount to the offer_completed record while splitting it up relative to reward ratio
+for person in persons_unique:
+    # Get all offer completed records by current person in order to get their offer_rcvd_time value
+    transcript_norm_pers = transcript_norm[(transcript_norm['person'] == person) & ((transcript_norm['event'] == 'offer viewed') | (transcript_norm['event'] == 'offer completed'))]
+    # print(f"transcript_norm_pers {person}:\n {transcript_norm_pers[['person', 'event', 'time', 'offer_id']]}")
+    # Make point in time unique (in case of several offers completed at same time) 
+    time_list_unique = transcript_norm_pers['time'].unique()
+    # print(f"time_list_unique {time_list_unique}")    
+    for time in time_list_unique:
+        # Get all offers completed records being recorded at time of completion of current offer.
+        transcript_norm_pers_time = transcript_norm_pers[(transcript_norm_pers['time'] == time) & ((transcript_norm_pers['event'] == 'offer viewed') | (transcript_norm_pers['event'] == 'offer completed'))]
+        print(f"*** transcript_norm_pers_time:\n {transcript_norm_pers_time[['person', 'event', 'time', 'offer_id', 'amount', 'offer_reward']]}")
+        # print(f"type(transcript_norm_pers_time['offer_id']), {type(transcript_norm_pers_time['offer_id'])}")
+        for offer_id in transcript_norm_pers_time['offer_id']:
+            # Calculate the sum of all rewards of offers at that point in time:
+            # print(f'time {time}')
+            sum_rewards  = transcript_norm_pers_time[(transcript_norm_pers_time['time'] == time) & (transcript_norm_pers_time['event'] == 'offer completed')]['offer_reward'].values.sum()            
+            # print(f'sum_rewards {sum_rewards}')
+            # Use each offer_rcvd_time value to get the previous transaction record and amount
+            # As some offer_rcvd_times multiple offers are completed at the same offer_rcvd_time, split the transaction value according to the reward ratio of all completed offers at offer_rcvd_time *offer_rcvd_time*
+            amount_of_compl = transcript_norm[((transcript_norm['person'] == person) & (transcript_norm['event'] == 'transaction') & (transcript_norm['time'] == time) & (transcript_norm_pers['event'] == 'offer completed'))]['amount'].values.sum() 
+            # print(amount_of_compl)
+
+        # Having identified all offers completed records, the sum of transaction amounts and their sum of rewards, the offer_agg needs to be updated
+        update_offer_agg(offer_agg, person, time, transcript_norm_pers_time, amount_of_compl, sum_rewards)   
+        
+        # offer_limit_time = offer_rcvd_time
+        # transcript_norm_off = transcript_norm[(transcript_norm['person']==person) & (transcript_norm['time']>=offer_rcvd_time) & (transcript_norm['time']<=(offer_rcvd_time + offer_agg_per[offer_rcvd_time]) 
+        
+# offer_agg[offer_agg['person'] == "2eeac8d8feae4a8cad5a6af0499a211d"]
+offer_agg.to_excel(f'data/offer_agg{datetime.datetime.now().strftime("%d%m%y-%H%M%S")}.xlsx')
+
+offer_agg
+==========================================
+### new:
+# Process the 'event chain' person by person and "move" the transaction amount to the offer_completed record while splitting it up relative to reward ratio
+for person in persons_unique:
+    # Get all offer completed records by current person in order to get their offer_rcvd_time value
+    transcript_norm_pers = transcript_norm[((transcript_norm['person'] == person) & (transcript_norm['event'] == 'offer completed'))]
+    # print(f"transcript_norm_pers {person}:\n {transcript_norm_pers[['person', 'event', 'time', 'offer_id']]}")
+    # Make point in time unique (in case of several offers completed at same time) 
+    time_list_unique = transcript_norm_pers['time'].unique()
+    # print(f"time_list_unique {time_list_unique}")    
+    for time in time_list_unique:
+        # Get all offers completed records being recorded at time of completion of current offer.
+        transcript_norm_pers_time = transcript_norm_pers[(transcript_norm_pers['time'] == time) & (((transcript_norm_pers['event'] == 'offer viewed') | transcript_norm_pers['event'] == 'offer completed'))]
+        # print(f"*** transcript_norm_pers_time:\n {transcript_norm_pers_time[['person', 'event', 'time', 'offer_id', 'amount', 'offer_reward']]}")
+        print(f"type(transcript_norm_pers_time['offer_id']), {type(transcript_norm_pers_time['offer_id'])}")
+        for offer_id in transcript_norm_pers_time['offer_id']:
+            # Calculate the sum of all rewards of offers at that point in time:
+            # print(f'time {time}')
+            sum_rewards  = transcript_norm_pers_time[(transcript_norm_pers_time['time'] == time) & (transcript_norm_pers['event'] == 'offer completed')]['offer_reward'].values.sum()            
+            # print(f'sum_rewards {sum_rewards}')
+            # Use each offer_rcvd_time value to get the previous transaction record and amount
+            # As some offer_rcvd_times multiple offers are completed at the same offer_rcvd_time, split the transaction value according to the reward ratio of all completed offers at offer_rcvd_time *offer_rcvd_time*
+            amount_of_compl = transcript_norm[((transcript_norm['person'] == person) & (transcript_norm['event'] == 'transaction') & (transcript_norm['time'] == time) & (transcript_norm_pers['event'] == 'offer completed'))]['amount'].values.sum() 
+            # print(amount_of_compl)
+
+        # Having identified all offers completed records, the sum of transaction amounts and their sum of rewards, the offer_agg needs to be updated
+        update_offer_agg(offer_agg, person, time, transcript_norm_pers_time, amount_of_compl, sum_rewards)   
+        
+        # offer_limit_time = offer_rcvd_time
+        # transcript_norm_off = transcript_norm[(transcript_norm['person']==person) & (transcript_norm['time']>=offer_rcvd_time) & (transcript_norm['time']<=(offer_rcvd_time + offer_agg_per[offer_rcvd_time]) 
+        
+# offer_agg[offer_agg['person'] == "2eeac8d8feae4a8cad5a6af0499a211d"]
+offer_agg.to_excel(f'data/offer_agg{datetime.datetime.now().strftime("%d%m%y-%H%M%S")}.xlsx')
+
+offer_agg
+==========================================
+### old:
+# Process the 'event chain' person by person and "move" the transaction amount to the offer_completed record while splitting it up relative to reward ratio
+for person in persons_unique:
+    # Get all offer completed records by current person in order to get their offer_rcvd_time value
+    transcript_norm_pers = transcript_norm[((transcript_norm['person'] == person) & (transcript_norm['event'] == 'offer completed'))]
+    # print(f"transcript_norm_pers {person}:\n {transcript_norm_pers[['person', 'event', 'time', 'offer_id']]}")
+    # Make point in time unique (in case of several offers completed at same time) 
+    time_list_unique = transcript_norm_pers['time'].unique()
+    # print(f"time_list_unique {time_list_unique}")    
+    for time in time_list_unique:
+        # Get all offers completed records being recorded at time of completion of current offer.
+        transcript_norm_pers_time = transcript_norm_pers[(transcript_norm_pers['time'] == time) & (transcript_norm_pers['event'] == 'offer completed')]
+        # print(f"*** transcript_norm_pers_time:\n {transcript_norm_pers_time[['person', 'event', 'time', 'offer_id', 'amount', 'offer_reward']]}")
+        for offer_id in transcript_norm_pers_time['offer_id']:
+            # Calculate the sum of all rewards of offers at that point in time:
+            # print(f'time {time}')
+            sum_rewards  = transcript_norm_pers_time[transcript_norm_pers_time['time'] == time]['offer_reward'].values.sum()            
+            # print(f'sum_rewards {sum_rewards}')
+            # Use each offer_rcvd_time value to get the previous transaction record and amount
+            # As some offer_rcvd_times multiple offers are completed at the same offer_rcvd_time, split the transaction value according to the reward ratio of all completed offers at offer_rcvd_time *offer_rcvd_time*
+            amount_of_compl = transcript_norm[((transcript_norm['person'] == person) & (transcript_norm['event'] == 'transaction') & (transcript_norm['time'] == time) )]['amount'].values.sum() 
+            # print(amount_of_compl)
+
+        # Having identified all offers completed records, the sum of transaction amounts and their sum of rewards, the offer_agg needs to be updated
+        update_offer_agg(offer_agg, person, time, transcript_norm_pers_time, amount_of_compl, sum_rewards)   
+        
+        # offer_limit_time = offer_rcvd_time
+        # transcript_norm_off = transcript_norm[(transcript_norm['person']==person) & (transcript_norm['time']>=offer_rcvd_time) & (transcript_norm['time']<=(offer_rcvd_time + offer_agg_per[offer_rcvd_time]) 
+        
+# offer_agg[offer_agg['person'] == "2eeac8d8feae4a8cad5a6af0499a211d"]
+offer_agg
+        
+# offer_agg[offer_agg['person'] == "2eeac8d8feae4a8cad5a6af0499a211d"]
+offer_agg.to_excel(f'data/offer_agg{datetime.datetime.now().strftime("%d%m%y-%H%M%S")}.xlsx')
+
+offer_agg
+
+
+
+==========================================
 # Process the 'event chain' person by person and "move" the transaction amount to the offer_completed record while splitting it up relative to reward ratio
 for person in persons_unique:
     # Get all offers completed records by current person in order to get their offer_rcvd_time value
