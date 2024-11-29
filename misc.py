@@ -1,5 +1,68 @@
 import pandas as pd
 
+def group_ages_into_n_groups(df, n):
+    # Sort the dataframe by age
+    df = df.sort_values(by='age')
+    
+    # Calculate the total number of people
+    total_people = df['count_person'].sum()
+    
+    # Calculate the target number of people per group
+    target_per_group = total_people / n
+    
+    # Initialize variables
+    groups = []
+    current_group = []
+    current_group_count = 0
+    
+    # Iterate over the dataframe rows
+    for index, row in df.iterrows():
+        age = row['age']
+        count = row['count_person']
+        
+        # If adding this age to the current group exceeds the target, start a new group
+        if current_group_count + count > target_per_group and len(groups) < n - 1:
+            groups.append(current_group)
+            current_group = []
+            current_group_count = 0
+        
+        # Add the current age to the group
+        current_group.append((age, count))
+        current_group_count += count
+    
+    # Add the last group if it's not empty
+    if current_group:
+        groups.append(current_group)
+    
+    return groups
+
+# Example usage
+data = {'age': [18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 95, 96, 97, 98, 99, 100, 101, 118],
+        'count_person': [70, 135, 135, 140, 131, 171, 101, 97, 117, 82, 147, 144, 122, 132, 80, 55, 20, 5, 5, 12, 5, 3]}
+df = pd.DataFrame(data)
+
+n = 3
+groups = group_ages_into_n_groups(df, n)
+for i, group in enumerate(groups):
+    print(f"Group {i+1}: {group}")
+
+# Initialize a dictionary to store the sums
+sums = {}
+
+# Iterate over each group and sum the second values of each tuple
+for i, group in enumerate(groups):
+    group_name = f'Group {i+1}'
+    sums[group_name] = sum(value for _, value in group)
+
+# Print the result
+print(sums)
+
+quit()
+
+
+
+import pandas as pd
+
 # Create a pandas dataframe transcript_norm_pers_time with column reward containing values 5, 2
 data = {'reward': [4, 4, 2]}
 transcript_norm_pers_time = pd.DataFrame(data)
