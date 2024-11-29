@@ -1,3 +1,55 @@
+
+# Set the figure size
+plt.figure(figsize=(12, 6))
+
+# Set the positions and width for the bars
+positions = range(len(result))
+width = 0.2
+
+# Plot the bars
+plt.bar(positions, result['count_offer_rcvd'], width=width, label='Count Offer Received')
+plt.bar([p + width for p in positions], result['count_offer_view'], width=width, label='Count Offer Viewed')
+plt.bar([p + width * 2 for p in positions], result['count_offer_cmpl'], width=width, label='Count Offer Completed')
+
+
+
+# Set the x-axis labels and positions
+plt.xlabel('Offer ID')
+plt.ylabel('Counts')
+plt.title('Comparison of Offer Received, Viewed, and Completed Counts by Offer ID')
+plt.xticks([p + width for p in positions], result['offer_id'].str[:2])
+
+# Add legend
+plt.legend()
+
+# Show the plot
+plt.show()
+
+# Create a bar graph to show a comparison of total revenues generate by each offer
+
+# Set the figure size
+plt.figure(figsize=(12, 6))
+
+# Set the positions and width for the bars
+positions = range(len(result))
+width = 0.2
+
+# Plot the bars
+plt.bar(positions, result['sum_offer_trx_amount'], width=width, label='Sum Transaction Amount (Revenue)')
+
+# Set the x-axis labels and positions
+plt.xlabel('Offer ID')
+plt.ylabel('Revenue')
+plt.title('Comparison of Revenue generate by each Offer ID')
+plt.xticks([p + width for p in positions], result['offer_id'].str[:2])
+
+# Add legend
+plt.legend()
+
+# Show the plot
+plt.show() 
+
+
 ==========================================
 ### new:
 # Process the 'event chain' person by person and "move" the transaction amount to the offer_completed record while splitting it up relative to reward ratio
