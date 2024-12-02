@@ -1,3 +1,27 @@
+# ### PIVOT Table ###
+import pandas as pd
+
+d = {'A': ['rot', 'grün', 'blau', 'rot', 'grün', 'blau'],
+     'B': ['eins', 'zwei', 'eins', 'zwei', 'drei', 'vier'],
+     'C': [345, 325, 898, 989, 23, 143],
+     'D': [1, 2, 3, 4, 5, 6]}
+
+df = pd.DataFrame(d)
+
+print(df)
+
+print('\n===================================\n')
+
+df2 = df.pivot(index = 'A', 
+               columns = 'B', 
+               values='C')
+print(df2)
+
+print('\n===================================\n')
+
+quit()
+
+
 import pandas as pd
 
 def group_ages_into_n_groups(df, n):
