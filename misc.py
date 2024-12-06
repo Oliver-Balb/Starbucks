@@ -1,5 +1,22 @@
 import pandas as pd
 
+from sklearn.preprocessing import MultiLabelBinarizer
+
+# Sample data
+data = [('apple', 'banana'), ('banana', 'orange', 'grape'), ('apple', 'orange')]
+
+# Create MultiLabelBinarizer instance
+mlb = MultiLabelBinarizer()
+
+# Transform data
+binarized_data = mlb.fit_transform(data)
+
+print('Data:\n', data)
+print('Binarized:\n', binarized_data)
+print('Classes:\n', mlb.classes_)
+
+
+
 # Sample data for the first pivot table
 data1 = {
     'gender': ['F', 'F', 'M', 'M'],
@@ -16,29 +33,7 @@ data2 = {
     'offer_trx_amount': [0, 100, 75, 125]
 }
 
-# Create DataFrames
-df1 = pd.DataFrame(data1)
-df2 = pd.DataFrame(data2)
-
-print(df1)
-print(df2)
-
-# Create pivot tables
-pivot1 = pd.pivot_table(df1, values='offer_trx_amount', index=['gender', 'income_range'], columns=['age_group'], aggfunc='sum', fill_value=0)
-pivot2 = pd.pivot_table(df2, values='offer_trx_amount', index=['gender', 'income_range'], columns=['age_group'], aggfunc='sum', fill_value=0)
-
-print(pivot1)
-print(pivot1)
-
-# Perform element-wise division
-result = pivot1 / pivot2
-
-# Display the result
-print(result)
-
 quit()
-
-
 
 ### HEAT MAP based on PIVOT TABLE
 
