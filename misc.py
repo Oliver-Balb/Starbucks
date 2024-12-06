@@ -1,3 +1,90 @@
+import pandas as pd
+
+# Sample data for the first pivot table
+data1 = {
+    'gender': ['F', 'F', 'M', 'M'],
+    'income_range': ['25000-49999', '50000-74999', '25000-49999', '50000-74999'],
+    'age_group': ['18-27', '28-37', '18-27', '28-37'],
+    'offer_trx_amount': [100, 200, 150, 250]
+}
+
+# Sample data for the second pivot table
+data2 = {
+    'gender': ['F', 'F', 'M', 'M'],
+    'income_range': ['25000-49999', '50000-74999', '25000-49999', '50000-74999'],
+    'age_group': ['18-27', '28-37', '18-27', '28-37'],
+    'offer_trx_amount': [0, 100, 75, 125]
+}
+
+# Create DataFrames
+df1 = pd.DataFrame(data1)
+df2 = pd.DataFrame(data2)
+
+print(df1)
+print(df2)
+
+# Create pivot tables
+pivot1 = pd.pivot_table(df1, values='offer_trx_amount', index=['gender', 'income_range'], columns=['age_group'], aggfunc='sum', fill_value=0)
+pivot2 = pd.pivot_table(df2, values='offer_trx_amount', index=['gender', 'income_range'], columns=['age_group'], aggfunc='sum', fill_value=0)
+
+print(pivot1)
+print(pivot1)
+
+# Perform element-wise division
+result = pivot1 / pivot2
+
+# Display the result
+print(result)
+
+quit()
+
+
+
+### HEAT MAP based on PIVOT TABLE
+
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Sample data
+data = {
+    'age_group': ['18-27', '28-37', '38-47', '48-57', '58-67', '68-77', '78-'],
+    'F_100000+': [0.00, 103.26, 446.39, 15664.95, 16500.35, 12965.33, 9764.05],
+    'F_25000-49999': [4273.03, 4537.58, 4124.07, 4708.20, 4743.67, 3106.95, 2415.47],
+    'F_50000-74999': [7863.31, 9942.97, 15551.20, 24828.90, 21917.01, 12127.88, 9764.56],
+    'F_75000-99999': [745.97, 1558.76, 9134.00, 36263.05, 37566.28, 22517.17, 17117.35],
+    'M_100000+': [0.00, 0.00, 335.02, 9792.16, 9143.36, 5382.01, 4773.43],
+    'M_25000-49999': [7183.29, 7755.83, 7921.62, 6430.88, 7073.02, 4159.52, 1875.16],
+    'M_50000-74999': [8958.66, 12714.38, 19094.04, 29471.43, 23238.07, 14126.90, 10002.03],
+    'M_75000-99999': [78.20, 1300.23, 11173.95, 25097.96, 28555.39, 19967.86, 7835.13],
+    'O_100000+': [0.00, 0.00, 58.30, 51.13, 0.00, 0.00, 0.00],
+    'O_25000-49999': [97.62, 156.11, 221.13, 153.59, 509.13, 21.50, 1.54],
+    'O_50000-74999': [158.74, 269.32, 533.10, 688.36, 915.62, 779.93, 143.76],
+    'O_75000-99999': [0.00, 61.69, 390.83, 1589.44, 1300.30, 345.43, 281]
+}
+
+# Create DataFrame
+df = pd.DataFrame(data)
+
+# Reset the index to use numeric values
+df = df.reset_index()
+
+# Generate a heatmap
+plt.figure(figsize=(12, 8))
+sns.heatmap(df.set_index('index'), annot=True, fmt=".2f", cmap="YlGnBu")
+
+# Add title and labels
+plt.title('Heat Map of Income Ranges by Age Group and Gender')
+plt.xlabel('Income Range and Gender')
+plt.ylabel('Age Group')
+
+# Show the plot
+plt.show()
+
+quit()
+
+
+
 # ### PIVOT Table ###
 import pandas as pd
 
