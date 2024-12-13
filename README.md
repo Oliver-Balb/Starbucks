@@ -34,17 +34,15 @@ Based on the understanding described above, my objectives in solving the Starbuc
 * Customer value: Identification of customers with the highest conversion rates and highest average revenue.
 * Prediction of conversion and revenue.
 
-In order to have insights related to revenue related to customers and offers the event history in transcript has to processed including data in portfolio, especially duration and difficulty.
+In order to have insights related to conversion rates and revenue related to customers and offers the event history in transcript.json, offer.json and portfolio.json have to be analysed regarding data quality and tidiness issues have to be resolved .
 
 **N. B. As the offers of type "informational" cannot be related directly to purchase events, I have excluded these events from further analysis.**
 
-# Data Analysis
-
-## Available Data Files <a name="data"></a>
+# Available Data Files <a name="data"></a>
 
 The data is provided separated into three files in JSON format:
 
-### profile.json - Customers with Starbucks reward membership
+## profile.json - Customers with Starbucks reward membership
 Rewards program users (17000 users x 5 fields)
 
 * gender: (categorical) M, F, O, or null
@@ -55,7 +53,7 @@ Rewards program users (17000 users x 5 fields)
 * portfolio.json
 * Offers sent during 30-day test period (10 offers x 6 fields)
 
-### portfolio.json - Offers description
+## portfolio.json - Offers description
 Offers sent during 30-day test period (10 offers x 6 fields)
 
 * reward: (numeric) money awarded for the amount spent
@@ -67,7 +65,7 @@ Offers sent during 30-day test period (10 offers x 6 fields)
 * transcript.json
 * Event log (306648 events x 4 fields)
 
-### transcript.json - Interaction history including offer communication, conversion and revenue data
+## transcript.json - Interaction history including offer communication, conversion and revenue data
 Event log (306648 events x 4 fields)
 
 * person: (string/hash)
@@ -78,10 +76,20 @@ Event log (306648 events x 4 fields)
 * reward: (numeric) money gained from "offer completed"
 * time: (numeric) hours after start of test
 
-## Data Quality Issues
+# Structure of Jupyter Notebooks and Python helper module
+The solution consists of two Jupyter Notebooks and one Python file:
+
+* Starbucks_Capstone_notebook.ipynb: Data quality and data tidiness analysis and cleaning
+* Starbuck_Capstone_notebook-Analysis.ipynb: Data analysis and prediction model
+* dataprocessing_helper.py: Helper function for data processing, e. g. one-hot encoding
+
+# Data Analysis
+
+## Data Quality and Tidiness Issues
 ### profile.json
 
-In profile.json are 2175 cusotmer records with age equals to 118 years and having gender None values and income NaN values. 
+#### Quality Issues
+In profile.json are 2175 cusotmer records with age equals to 118 years (incorrect data) and having gender None values and income NaN values (missing data). 
 For gender the None values will be replaced by NaN values.
 
 As soon as analysis/models are used which are sensitive to NaN values the data related records to these customer records will be deleted.
@@ -90,22 +98,46 @@ As soon as analysis/models are used which are sensitive to NaN values the data r
 
 ### transcript.json
 
+#### Tidiness Issues
+
+* Tidiness requirement "each observation forms a row" is not fulfilled, as each offer "history" is spread across multiple rows; some attributes are not populated in each row (e. g. amount)
+* Tideness requirement "each type of observational unit forms a table" is not fulfilled, as some attributes of customer and the offer relevant for analysis are stored normalized in separated tables (profile.json, portfolio.json)
+* Tideness requirement "each variable forms a column" is not fullfilled, as the column value contains a heterogenous value categories ()
+
 #### Basic assumption for the relationship between offer completed events and transactions
-For one specific customer (id) the transaction record(s) with the same time value as the offer completed event record are considered as one purchase event.
+In some cases for one customer (ids) there is more than one transaction record with the same time value as the offer completed event record are considered as one purchase event.
 
 #### Multiple offers used per transaction
-In some cases, there are multiple offers used at one transaction (assumption: same time value). This means, that the amount has to be split up. I assumed, that the amount can be split up according to the ratio of rewards of the offers invovled at the same time of offer completion. 
+In some cases, there are multiple offers used at one transaction (assumption: same time value). This means, that the amount has to be split up. I assumed, that the amount can be split up according to the ratio of difficulty values of the offers invovled at the same time of offer completion. 
 
 Example: Based on this assumption the amount 18,42 is split up the following way:
-* offer_id 9b*: 18,42 * 5 / (5 + 2) = 13,16
-* offer_id fa*: 18,42 * 2 / (5 + 2) =  5,26
+* offer_id 9b*: 18,42 *  5 / (5 + 10) =  6,14
+* offer_id fa*: 18,42 * 10 / (5 + 10) = 12,28
 
 ![transcript.json multiple offers per transaction issues](multiple_offers_per_trx.png "transccipt.json data anomaly: multiple offers per transaction issues")
 
 #### Offer completion events without prior offer view events
-In some cases, there are offer completion events without prior offer view events (e. g. offer_id 29* in the example below). Probably the there are lock screen notification on mobile devices, which are not tracked as viewed. As the customer is benefiting anyhow from the the offer my assumption is, to accept this event as a normal completion (i. e. conversion event).
+In some cases, there are offer completion events without prior offer view events (e. g. offer_id 29* in the example below). Probably the there are lock screen notifications on mobile devices, which are not tracked as views. As the customer is benefiting anyhow from the the 
+offer my assumption is, to accept these events as a normal completions (i. e. conversion events).
 
 ![transcript.json offer completion without prior offer view event](offer_completed_without_view.png "transcript.json data anomaly: offer completion without prior offer view event")
+
+#### Transactions not related to any offer completed
+Transactions, which cannot be related to any offer completed are ignored related the anaysis of the success of offers.
+
+# Cleaning the Data
+
+Basic cleaning of data is accomplished by 
+1. joining the profile.json and portfolio.json with the transcript.json table
+2. aggregating the offer history based on customer id, offer_id, duration aggregating individual offer viewed and offer received event records into the offer received recorded and assigning transaction value as described above
+
+Resulting table/dataframe: offer_agg
+
+![transcript.json offer_agg structure and sample data](offer_agg_sample.png "transcript.json offer_agg structure and sample data")
+
+# Storing the Data
+
+The cleaned tables/dataframes portfolio, profile, portfolio and offer_agg are stored as CSV files in order to reducing processing effort when re-executing the analysis.
 
 ## Installation <a name="installation"></a>
 
