@@ -38,7 +38,7 @@ The conversion rate is the percentage of subjects who complete a specific desire
 Based on the understanding described above, my objectives in solving the Starbucks Project are:
 
 * Offer effectiveness: Comparison of the conversion rate and the (monetary) revenue of the various BOGO and discount offers.
-* Customer value: Identification of customers with the highest conversion rates and highest average revenue.
+* Customer value: Identification of customer segments with the highest conversion rates and highest average revenue.
 * Prediction of conversion and revenue.
 
 In order to have insights related to conversion rates and revenue related to customers and offers the event history in transcript.json, offer.json and portfolio.json have to be analysed regarding data quality and tidiness issues have to be resolved .
@@ -149,13 +149,10 @@ The cleaned tables/dataframes portfolio, profile, portfolio and offer_agg are st
 
 # Loading of Cleaned Data and Analysis
 
-Loading of preprocessed data and analysis of 
+Starbuck_Capstone_notebook-Analysis.ipynb is used for specific analysis of the wrangled data. 
 
-* offer effectiveness: Comparison of the conversion rate and the (monetary) revenue of the various BOGO and discount offers.
-* customer value: Identification of customers with the highest conversion rates and highest average revenue.
-* prediction of conversion and revenue
+Conclusions can be found in my [related blog-post](https://medium.com/@oliver.balb/analyzing-starbucks-simulated-customer-and-customer-interaction-data-insights-and-predictions-e2aea02a3d23).
 
-is done in the Starbuck_Capstone_notebook-Analysis.ipynb Jupyter notebook.
 
 # Python Version and Packages 
 

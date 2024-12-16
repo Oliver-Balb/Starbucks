@@ -1,4 +1,26 @@
 import pandas as pd
+import numpy as np
+
+# Sample DataFrame
+data = {
+    'A': [10, 50, 30, 70],
+    'B': [90, 60, 40, 80],
+    'C': [30, 70, 50, 90]
+}
+
+df = pd.DataFrame(data)
+
+print(df)
+
+# Extract values across all columns which are larger than 40
+filtered_df = df.applymap(lambda x: x if x >= 40 else np.nan)
+
+print(filtered_df)
+
+quit()
+
+
+import pandas as pd
 
 from sklearn.preprocessing import MultiLabelBinarizer
 
