@@ -3,16 +3,23 @@
 
 This is a GITHUB Repository **just for educational purposes.** All data was provided by [Udacity](https://www.udacity.com/dashboard) and Starbucks.
 
-## Table of Contents
+# Table of Contents
 
-[Project Summary](#overview)
-[Available Data and Features Included](#data)
-[Installation](#installation)
-[Execution](#execution)
+[Project Summary](#project-summary)
 
-## Overview<a name="overview"></a>
+[Available Data Files](#available-data-files)
 
-The dataset provided by starbucks simulates purchasing decisions influenced by promotional offers. Each person has hidden traits affecting their buying patterns, linked to observable traits. Events include receiving, opening offers, and making purchases, with only transaction amounts recorded. There are three offer types:
+[Structure of Jupyter Notebooks and Python helper module](#structure-of-jupyter-notebooks-and-python-helper-module)
+
+[Source Data Analysis and Assessment](#source-data-analysis-and-assessment)
+
+[Cleaning the Data and Storing Cleanded Data](#cleaning-the-data-and-storing-cleanded-data)
+
+[Loading of Cleaned Data and Analysis](#loading-of-cleaned-data-and-analysis)>
+
+## Project Summary
+
+The dataset provided by starbucks simulates purchasing decisions influenced by promotional offers. Events recorded include receiving offers, viewing offers, and completing offers (making purchases with transaction amounts recorded). There are three offer types:
 
 BOGO (Buy-One-Get-One): Spend a certain amount to get an equal reward.
 Discount: Get a reward equal to a fraction of the amount spent.
@@ -36,9 +43,9 @@ Based on the understanding described above, my objectives in solving the Starbuc
 
 In order to have insights related to conversion rates and revenue related to customers and offers the event history in transcript.json, offer.json and portfolio.json have to be analysed regarding data quality and tidiness issues have to be resolved .
 
-**N. B. As the offers of type "informational" cannot be related directly to purchase events, I have excluded these events from further analysis.**
+**N. B. As the offers of type "informational" can hardly be related directly to purchase events, I have excluded these events from further analysis.**
 
-# Available Data Files <a name="data"></a>
+# Available Data Files
 
 The data is provided separated into three files in JSON format:
 
@@ -79,11 +86,11 @@ Event log (306648 events x 4 fields)
 # Structure of Jupyter Notebooks and Python helper module
 The solution consists of two Jupyter Notebooks and one Python file:
 
-* Starbucks_Capstone_notebook.ipynb: Data quality and data tidiness analysis and cleaning
-* Starbuck_Capstone_notebook-Analysis.ipynb: Data analysis and prediction model
+* Starbucks_Capstone_notebook.ipynb: Data quality and data tidiness analysis and cleaning; cleaned data is stored into files in Excel format
+* Starbuck_Capstone_notebook-Analysis.ipynb: Data analysis and prediction model, based on data loaded from files in Excel format
 * dataprocessing_helper.py: Helper function for data processing, e. g. one-hot encoding
 
-# Data Analysis
+# Source Data Analysis and Assessment
 
 ## Data Quality and Tidiness Issues
 ### profile.json
@@ -102,7 +109,7 @@ As soon as analysis/models are used which are sensitive to NaN values the data r
 
 * Tidiness requirement "each observation forms a row" is not fulfilled, as each offer "history" is spread across multiple rows; some attributes are not populated in each row (e. g. amount)
 * Tideness requirement "each type of observational unit forms a table" is not fulfilled, as some attributes of customer and the offer relevant for analysis are stored normalized in separated tables (profile.json, portfolio.json)
-* Tideness requirement "each variable forms a column" is not fullfilled, as the column value contains a heterogenous value categories ()
+* Tideness requirement "each variable forms a column" is not fullfilled, as the column value contains a heterogenous value categories
 
 #### Basic assumption for the relationship between offer completed events and transactions
 In some cases for one customer (ids) there is more than one transaction record with the same time value as the offer completed event record are considered as one purchase event.
@@ -123,59 +130,42 @@ offer my assumption is, to accept these events as a normal completions (i. e. co
 ![transcript.json offer completion without prior offer view event](offer_completed_without_view.png "transcript.json data anomaly: offer completion without prior offer view event")
 
 #### Transactions not related to any offer completed
-Transactions, which cannot be related to any offer completed are ignored related the anaysis of the success of offers.
+**Transactions, which cannot be related to any BOGO or discount offer completed are ignored related to the subsequent anaysis of the offers success rates.**
 
-# Cleaning the Data
+# Cleaning the Data and Storing Cleanded Data
+
+Preprocessing of data for basic cleaning and storing of cleaned data is done in Starbucks_Capstone_notebook.ipynb Jupyter notebook.
+
+## Cleaning Data
 
 Basic cleaning of data is accomplished by 
-1. joining the profile.json and portfolio.json with the transcript.json table
-2. aggregating the offer history based on customer id, offer_id, duration aggregating individual offer viewed and offer received event records into the offer received recorded and assigning transaction value as described above
+1. joining the transcript.json data with profile.json and portfolio.json data and 
+2. aggregating the offer history based on customer id, offer_id, duration aggregating individual offer received and offer viewed event records into the offer received recorded and assigning transaction value as described above
 
 Resulting table/dataframe: offer_agg
 
 ![transcript.json offer_agg structure and sample data](offer_agg_sample.png "transcript.json offer_agg structure and sample data")
 
-# Storing the Data
+## Storing the Data
 
-The cleaned tables/dataframes portfolio, profile, portfolio and offer_agg are stored as CSV files in order to reducing processing effort when re-executing the analysis.
+The cleaned tables/dataframes portfolio, profile, portfolio and offer_agg are stored as CSV files in order to reduce the processing effort when re-executing the analysis.
 
-## Installation <a name="installation"></a>
+# Loading of Cleaned Data and Analysis
 
-There should be no necessary libraries to run the code here beyond the Anaconda distribution of Python. The code should run with no issues using Python versions 3.
+Loading of preprocessed data and analysis of 
 
+* offer effectiveness: Comparison of the conversion rate and the (monetary) revenue of the various BOGO and discount offers.
+* customer value: Identification of customers with the highest conversion rates and highest average revenue.
+* prediction of conversion and revenue
 
-### Program Files
-* process_data.py - Extraction, transformation, and load of CSV above files into SQLITE DB including data cleansing.
-* train_classifier.py - Definition and training of a supervised machine learning model based on labeled message data.
-* Files required for the web app are stored within the udacity workspace.
+is done in the Starbuck_Capstone_notebook-Analysis.ipynb Jupyter notebook.
 
-## Execution <a name="files"></a>
+# Python Version and Packages 
 
-**(1) ETL**`
+This project is based Python 3.12.8 and requires the following main packages:
 
-Start of execution using command line with for mandatory arguments:
-
-`python process_data.py [messages_filepath] [categories_filepath] [database_filepath]`
-
-Provide the filepaths of the messages and categories datasets as the first and second argument respectively, as well as the filepath of the database to save the cleaned data to as the third argument. 
-
-Example: python process_data.py disaster_messages.csv disaster_categories.csv DisasterResponse.db
-
-**(2) Model definition and training**
-Start of execution using command line with two mandatory arguments:
-
-`python train_classifier.py [database_filepath] [model_filepath]`
-
-Provide the filepath of the disaster messages database as the first argument and the filepath of the pickle  file to save the model to as the second argument. 
-
-Example: python train_classifier.py ../data/DisasterResponse.db classifier.pkl
-
-**(3) Web Front End**
-
-a. In Udacity Project Workspace go to `app` directory: `cd app`
-
-b. Run your web app: `python run.py`
-
-c. Click the `PREVIEW` button to open the homepage
-
-
+* pandas >= 2.2.2
+* matplotlib >= 3.8.4
+* seaborn >= 0.13.2
+* sklearn >= 1.4.2
+* datetime 
