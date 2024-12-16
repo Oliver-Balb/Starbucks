@@ -86,7 +86,7 @@ Event log (306648 events x 4 fields)
 # Structure of Jupyter Notebooks and Python helper module
 The solution consists of two Jupyter Notebooks and one Python file:
 
-* Starbucks_Capstone_notebook.ipynb: Data quality and data tidiness analysis and cleaning; cleaned data is stored into files in Excel format
+* Starbucks_Capstone_notebook-Wrangling.ipynb: Data quality and data tidiness analysis and cleaning; cleaned data is stored into files in Excel format
 * Starbuck_Capstone_notebook-Analysis.ipynb: Data analysis and prediction model, based on data loaded from files in Excel format
 * dataprocessing_helper.py: Helper function for data processing, e. g. one-hot encoding
 
@@ -111,9 +111,6 @@ As soon as analysis/models are used which are sensitive to NaN values the data r
 * Tideness requirement "each type of observational unit forms a table" is not fulfilled, as some attributes of customer and the offer relevant for analysis are stored normalized in separated tables (profile.json, portfolio.json)
 * Tideness requirement "each variable forms a column" is not fullfilled, as the column value contains a heterogenous value categories
 
-#### Basic assumption for the relationship between offer completed events and transactions
-In some cases for one customer (ids) there is more than one transaction record with the same time value as the offer completed event record are considered as one purchase event.
-
 #### Multiple offers used per transaction
 In some cases, there are multiple offers used at one transaction (assumption: same time value). This means, that the amount has to be split up. I assumed, that the amount can be split up according to the ratio of difficulty values of the offers invovled at the same time of offer completion. 
 
@@ -134,7 +131,7 @@ offer my assumption is, to accept these events as a normal completions (i. e. co
 
 # Cleaning the Data and Storing Cleanded Data
 
-Preprocessing of data for basic cleaning and storing of cleaned data is done in Starbucks_Capstone_notebook.ipynb Jupyter notebook.
+Preprocessing of data for basic cleaning and storing of cleaned data is done in Starbucks_Capstone_notebook-Wrangling.ipynb Jupyter notebook.
 
 ## Cleaning Data
 
