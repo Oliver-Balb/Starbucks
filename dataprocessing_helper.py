@@ -70,5 +70,21 @@ def encode_categorical_values(df, col, mapping_dict):
     df[col + '_enc'] = df[col].map(mapping_dict).fillna(-1).astype(int)
     
     return df
-   
+
+def print_time_diff(start_time, end_time):
+    ''' 
+    Calculate the time difference between start_time and end_time
+    and print it in a readable format
+    
+    INPUT
+    start_time - UTC start time
+    end_trime - UTC end time
+    
+    OUTPUT
+    -
+    '''      
+    
+    total_time = end_time - start_time
+    minutes, seconds = divmod(total_time, 60)
+    print(f"Runtime: {int(minutes)}m {seconds:.1f}s")
     
